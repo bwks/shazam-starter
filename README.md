@@ -14,6 +14,13 @@ git clone --depth 1 git@github.com:bwks/shazam-starter.git <project-name>
 cd <project-name>
 ```
 
+## Update project variables in `bin/dev` file
+```
+APP_NAME="<UPDATE>";
+APP_OWNER="<UPDATE>";
+APP_OWNER_EMAIL="<UPDATE>";
+```
+
 ## Initialize the project
 ```
 bin/dev init

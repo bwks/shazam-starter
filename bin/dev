@@ -1,8 +1,7 @@
 #! /bin/sh
 
 # Set these
-APP_NAME="test";
-# APP_NAME="<UPDATE>";
+APP_NAME="<UPDATE>";
 APP_OWNER="<UPDATE>";
 APP_OWNER_EMAIL="<UPDATE>";
 
@@ -74,6 +73,7 @@ case $1 in
   
     ;;
   *)
-      echo "Unkown command '$1'";
+
+    echo "Unkown command '$1'";
     ;;
 esac
