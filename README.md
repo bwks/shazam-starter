@@ -1,8 +1,9 @@
-# shazam-starter
+# Shazam Starter Template
 
-Shazam is a Static Site Generator for Masochists.
+The quickest way to get started is with Docker, Docker Compose and this template
 
-The quickest way to get started is with Docker/Compose
+> It is assumed that you already have Docker with Compose already installed.
+> This template was tested against Docker CE - 20.10.21
 
 ## Clone the starter template
 ```
@@ -12,6 +13,11 @@ git clone --depth 1 git@github.com:bwks/shazam-starter.git <project-name>
 ## Move to project directory
 ```
 cd <project-name>
+```
+
+## Remove Git History
+```
+rm -rf .git
 ```
 
 ## Update project variables in `bin/dev` file
