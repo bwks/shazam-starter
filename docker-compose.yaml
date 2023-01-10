@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bwks/shazam
+    user: "${APP_USER_ID}:${APP_GROUP_ID}"
+    volumes:
+      - "./${APP_NAME}:${HOME_DIR}/${APP_NAME}"
+      - "./config:${HOME_DIR}/config"
+      - "./.shazam_template_hashes.json:${HOME_DIR}/.shazam_template_hashes.json"
+    ports:
+      - "3000:3000"
