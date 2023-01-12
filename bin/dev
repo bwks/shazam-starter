@@ -26,54 +26,66 @@ export HOME_DIR;
 
 CMD=$1;
 
+# Builds a Shazam docker container.
+build_container() {
+  docker compose \
+    --file docker-compose.yaml \
+    build --no-cache \
+      --build-arg APP_NAME=$APP_NAME \
+      --build-arg APP_OWNER="$APP_OWNER" \
+      --build-arg APP_OWNER_EMAIL="$APP_OWNER_EMAIL" \
+      --build-arg APP_USER=$USER \
+      --build-arg APP_USER_ID=$UID \
+      --build-arg APP_GROUP_ID=$GID \
+      --build-arg HOME_DIR=$HOME;
+}
+
+# Initializes a Shazam project and copies the files from the 
+# container to the host.
+init_project() {
+  docker container run -itd --name=shazam-tmp bwks/shazam ash \
+    && docker container cp shazam-tmp:$HOME/$APP_NAME $APP_NAME \
+    && docker container cp shazam-tmp:$HOME/config config \
+    && docker container kill shazam-tmp \
+    && docker container rm shazam-tmp;
+
+  echo "{}" >> .shazam_template_hashes.json;
+}
+
 case $1 in
+  # Bring up the project container
   "up" | "")
     docker compose \
       --file docker-compose.yaml \
       up;
     ;;
+
+  # Destroy the project container
   "down" | "rm")
     docker compose \
       --file docker-compose.yaml \
       down;
     ;;
 
+  # Build the project container
   "build")
-    docker compose \
-      --file docker-compose.yaml \
-      build --no-cache \
-        --build-arg APP_NAME=$APP_NAME \
-        --build-arg APP_OWNER="$APP_OWNER" \
-        --build-arg APP_OWNER_EMAIL="$APP_OWNER_EMAIL" \
-        --build-arg APP_USER=$USER \
-        --build-arg APP_USER_ID=$UID \
-        --build-arg APP_GROUP_ID=$GID \
-        --build-arg HOME_DIR=$HOME;
-      ;;
-
-  "init")
-    docker compose \
-      --file docker-compose.yaml \
-      build --no-cache \
-        --build-arg APP_NAME=$APP_NAME \
-        --build-arg APP_OWNER="$APP_OWNER" \
-        --build-arg APP_OWNER_EMAIL="$APP_OWNER_EMAIL" \
-        --build-arg APP_USER=$USER \
-        --build-arg APP_USER_ID=$UID \
-        --build-arg APP_GROUP_ID=$GID \
-        --build-arg HOME_DIR=$HOME;
-
-    docker container run -itd --name=shazam-tmp bwks/shazam ash \
-      && docker container cp shazam-tmp:$HOME/$APP_NAME $APP_NAME \
-      && docker container cp shazam-tmp:$HOME/config config \
-      && docker container kill shazam-tmp \
-      && docker container rm shazam-tmp;
-
-    echo "{}" >> .shazam_template_hashes.json;
-  
+    build_container;
     ;;
-  *)
 
-    echo "Unknown command '$1'";
+  # Initialize a Shazam project
+  "init")
+    if [ -d "./config/" ]; then
+      echo "ERROR => Looks like the project is already initialized.";
+      echo "INFO  => Are you trying to (re)build the shazam conainer?";
+      echo "INFO  => Use 'bin/dev build' instead.";
+      exit 1;
+    fi
+
+    build_container;
+    init_project;
+    ;;
+
+  *)
+    echo "ERROR => Unknown command '$1'";
     ;;
 esac
